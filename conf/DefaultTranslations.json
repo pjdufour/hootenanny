@@ -20,7 +20,7 @@
 	{
 		"NAME" : "OSM",
 		"DESCRIPTION" : "OpenStreetMap.org (OSM)",
-		"CANEXPORT" : false,
+		"CANEXPORT" : true,
 		"PATH" : "translations/OSM_Ingest.js",
 	},
 	{
