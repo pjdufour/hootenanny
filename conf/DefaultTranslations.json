@@ -29,5 +29,11 @@
 		"DESCRIPTION" : "GeoNames.org",
 		"CANEXPORT" : false,
 		"PATH" : "translations/GeoNames.js"
-	}
+	},
+	{
+		"NAME" : "WFP Global Airports (wld_trs_airports_wfp)",
+		"DESCRIPTION" : "WFP Global Airports (wld_trs_airports_wfp)",
+		"CANEXPORT" : true,
+		"PATH" : "translations/wfp/wld_trs_airports_wfp.py"
+	},
 ]

@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# sudo dd if=/dev/zero of=/swapfile bs=1024 count=8388608
+############# Environment #############
+DATA=/home/vagrant/hoot/data
+
+############# Clean Data #############
+rm -f $DATA/osm/wld_trs_airports_wfp.osm.pbf
+rm -f $DATA/osm/ghana-latest.osm
+rm -f $DATA/osm/ghana_airports_all.osm
+rm -f $DATA/osm/ghana_airports_nodes.osm
+rm -f $DATA/osm/ghana_airports_final.osm
+rm -f $DATA/osm/ghana_airports_final.osm.pbf
+
+#hadoop rmr wld_trs_airports_wfp.osm.pbf
+############# WFP Data #############
+rm -f $DATA/osm/wld_trs_airports_wfp.osm.pbf
+hoot big-ogr2osm /home/vagrant/hoot/translations/wfp/wld_trs_airports_wfp.py \
+$DATA/osm/wld_trs_airports_wfp.osm.pbf \
+$DATA/shapefile/wld_trs_airports_wfp.shp
+
+#hadoop rmr wld_trs_airports_wfp.osm.pbf
+#hadoop fs -mkdir wld_trs_airports_wfp.osm.pbf
+#hadoop fs -put $DATA/osm/wld_trs_airports_wfp.osm.pbf wld_trs_airports_wfp.osm.pbf/Input.osm.pbf
+
+############# OSM Data #############
+# Upload Ghana OSM Data
+rm -f $DATA/osm/ghana-latest.osm
+rm -f $DATA/osm/ghana_airports_all.osm
+rm -f $DATA/osm/ghana_airports_nodes.osm
+rm -f $DATA/osm/ghana_airports_final.osm
+
+#osmosis \
+#  --read-pbf $DATA/osm/ghana-latest.osm.pbf \
+#  --tf accept-nodes aeroway=* \
+#  --tf accept-ways aeroway=* \
+#  --tf accept-relations aeroway=* \
+#  --used-node \
+#  --write-xml $DATA/osm/ghana_airports_all.osm
+
+osmconvert $DATA/osm/ghana-latest.osm.pbf -o=$DATA/osm/ghana-latest.osm
+osmfilter $DATA/osm/ghana-latest.osm --keep="aeroway=" -o=$DATA/osm/ghana_airports_all.osm
+osmconvert $DATA/osm/ghana_airports_all.osm --add-bbox-tags --all-to-nodes -o=$DATA/osm/ghana_airports_nodes.osm
+osmfilter $DATA/osm/ghana_airports_nodes.osm --keep="aeroway=" -o=$DATA/osm/ghana_airports_final.osm
+osmconvert $DATA/osm/ghana_airports_all.osm -o=$DATA/osm/ghana_airports_final.osm.pbf
+
+#hadoop fs -rmr ghana_airports.osm.pbf
+#hadoop fs -mkdir ghana_airports.osm.pbf
+#hadoop fs -put $DATA/osm/ghana_airports_final.osm.pbf ghana_airports.osm.pbf/Input.osm.pbf
+
+#hadoop fs -rmr conflated.osm.pbf
+#hadoop fs -mkdir conflated.osm.pbf
+#hoot big-conflate wld_trs_airports_wfp.osm.pbf/Input.osm.pbf ghana_airports.osm.pbf/Input.osm.pbf conflated.osm.pbf/Output.osm.pbf 0.001
+hoot conflate \
+$DATA/osm/wld_trs_airports_wfp.osm.pbf \
+$DATA/osm/ghana_airports_final.osm.pbf \
+$DATA/osm/wld_trs_airports_wfp_conflated.osm.pbf
+
+hoot osm2ogr /home/vagrant/hoot/translations/wfp/wld_trs_airports_wfp.py \
+$DATA/osm/wld_trs_airports_wfp_conflated.osm.pbf \
+$DATA/osm/wld_trs_airports_wfp_conflated.shp

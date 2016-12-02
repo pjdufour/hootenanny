@@ -67,7 +67,7 @@ Vagrant.configure(2) do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  config.vm.synced_folder ".", "/home/vagrant/hoot"
+  config.vm.synced_folder ".", "/home/vagrant/hoot", group: "tomcat6", mount_options: ["dmode=775,fmode=775"]
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -78,8 +78,10 @@ Vagrant.configure(2) do |config|
   #   vb.gui = true
   #
   #   # Customize the amount of memory on the VM:
-     vb.memory = 8192
-     vb.cpus = 4
+     #vb.memory = 8192
+     #vb.cpus = 4
+     vb.memory = 12000
+     vb.cpus = 8
   end
 
   # This is a provider for the Parallels Virtualization Software
@@ -133,5 +135,3 @@ else
     load 'VagrantfileLocal.vbox'
   end
 end
-
-
